@@ -27,3 +27,17 @@ export const matrixBg: TargetAndTransition = {
     repeat: Infinity
   }
 };
+
+export const gradientAnimation = {
+  background: [
+    "linear-gradient(45deg, #000000, #FF0080, #000000)",
+    "linear-gradient(45deg, #000000, #7000FF, #000000)",
+    "linear-gradient(45deg, #FF0080, #000000, #7000FF)",
+    "linear-gradient(45deg, #000000, #FF0080, #000000)"
+  ],
+  transition: {
+    duration: 10,
+    repeat: Infinity,
+    ease: "linear"
+  }
+};

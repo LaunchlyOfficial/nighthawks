@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { fadeInVariants, staggerChildren } from "@/lib/animations";
+import { fadeInVariants, staggerChildren, gradientAnimation } from "@/lib/animations";
 import { Shield, Lock, Search } from "lucide-react";
 import { Link } from "wouter";
 
@@ -9,27 +9,66 @@ export default function Home() {
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
       <motion.section 
-        className="relative h-screen flex items-center justify-center bg-[#000000]"
+        className="relative h-screen flex items-center justify-center overflow-hidden"
         initial="hidden"
         animate="visible"
         variants={staggerChildren}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70" />
+        {/* Animated background */}
         <motion.div 
-          className="container relative z-10 text-center"
+          className="absolute inset-0"
+          animate={gradientAnimation}
+        />
+
+        {/* Animated grid overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,black,transparent)]" />
+
+        {/* Animated particles or stars effect */}
+        <div className="absolute inset-0 opacity-50">
+          <div className="absolute inset-0 bg-[radial-gradient(white_1px,transparent_1px)] bg-[length:50px_50px] animate-[twinkle_8s_ease-in-out_infinite]" />
+          <div className="absolute inset-0 bg-[radial-gradient(white_1px,transparent_1px)] bg-[length:100px_100px] animate-[twinkle_12s_ease-in-out_infinite_2s]" />
+        </div>
+
+        {/* Content overlay with gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black" />
+
+        <motion.div 
+          className="container relative z-10 text-center px-4"
           variants={fadeInVariants}
         >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-            SECURING THE DIGITAL FRONTIER
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-300 max-w-3xl mx-auto">
+          <motion.div
+            initial={{ scale: 1.2, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+          >
+            <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-[#FF0080] to-white">
+              SECURING THE DIGITAL FRONTIER
+            </h1>
+          </motion.div>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="text-xl md:text-2xl mb-12 text-gray-300 max-w-3xl mx-auto"
+          >
             Working with federal agencies to protect against cyber threats and strengthen digital security
-          </p>
-          <Link href="/apply">
-            <Button size="lg" variant="outline" className="text-lg border-2 hover:bg-white hover:text-black transition-all duration-300">
-              JOIN THE MISSION
-            </Button>
-          </Link>
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+          >
+            <Link href="/apply">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg border-2 hover:bg-[#FF0080] hover:border-[#FF0080] hover:text-white transition-all duration-500 relative overflow-hidden group"
+              >
+                <span className="relative z-10">JOIN THE MISSION</span>
+                <div className="absolute inset-0 bg-[#FF0080] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+              </Button>
+            </Link>
+          </motion.div>
         </motion.div>
       </motion.section>
 
@@ -51,21 +90,21 @@ export default function Home() {
           <h2 className="text-4xl font-bold mb-16 text-center">WHAT WE DO</h2>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center">
-              <Shield className="h-16 w-16 mb-6 mx-auto text-primary" />
+              <Shield className="h-16 w-16 mb-6 mx-auto text-[#FF0080]" />
               <h3 className="text-2xl font-bold mb-4">CYBERCRIME PREVENTION</h3>
               <p className="text-gray-300">
                 Proactively identifying and preventing cyber threats before they cause harm.
               </p>
             </div>
             <div className="text-center">
-              <Lock className="h-16 w-16 mb-6 mx-auto text-primary" />
+              <Lock className="h-16 w-16 mb-6 mx-auto text-[#FF0080]" />
               <h3 className="text-2xl font-bold mb-4">SECURITY & PROTECTION</h3>
               <p className="text-gray-300">
                 Comprehensive security assessments and protection strategies.
               </p>
             </div>
             <div className="text-center">
-              <Search className="h-16 w-16 mb-6 mx-auto text-primary" />
+              <Search className="h-16 w-16 mb-6 mx-auto text-[#FF0080]" />
               <h3 className="text-2xl font-bold mb-4">ETHICAL HACKING</h3>
               <p className="text-gray-300">
                 Authorized security testing to identify vulnerabilities.
@@ -83,7 +122,11 @@ export default function Home() {
             We're looking for talented cybersecurity experts to join our mission.
           </p>
           <Link href="/apply">
-            <Button size="lg" variant="outline" className="text-lg border-2 hover:bg-white hover:text-black transition-all duration-300">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="text-lg border-2 hover:bg-[#FF0080] hover:border-[#FF0080] hover:text-white transition-all duration-500"
+            >
               APPLY NOW
             </Button>
           </Link>
