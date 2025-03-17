@@ -64,7 +64,7 @@ export default function Home() {
                   1000,
                 ]}
                 wrapper="span"
-                speed={100}
+                speed={200}
                 repeat={Infinity}
                 className="text-[#FF0080]"
               />
