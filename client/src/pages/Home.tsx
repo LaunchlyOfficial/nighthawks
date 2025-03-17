@@ -33,7 +33,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black" />
 
         <motion.div 
-          className="container relative z-10 text-center px-4"
+          className="container max-w-5xl mx-auto px-4 text-center"
           variants={fadeInVariants}
         >
           <motion.div
@@ -57,6 +57,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8 }}
+            className="flex justify-center"
           >
             <Link href="/apply">
               <Button 
@@ -74,19 +75,17 @@ export default function Home() {
 
       {/* Mission Section */}
       <section className="py-32 bg-black">
-        <div className="container">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold mb-8 text-center">WHO WE ARE</h2>
-            <p className="text-xl text-gray-300 leading-relaxed">
-              Nighthawk is an elite team of white-hat hackers working in partnership with federal agencies to combat cybercrime and strengthen digital security. Our experts conduct ethical hacking operations, vulnerability assessments, and security research to stay ahead of cyber threats.
-            </p>
-          </div>
+        <div className="container max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-8 text-center">WHO WE ARE</h2>
+          <p className="text-xl text-gray-300 leading-relaxed">
+            Nighthawk is an elite team of white-hat hackers working in partnership with federal agencies to combat cybercrime and strengthen digital security. Our experts conduct ethical hacking operations, vulnerability assessments, and security research to stay ahead of cyber threats.
+          </p>
         </div>
       </section>
 
       {/* Services Section */}
       <section className="py-32 bg-zinc-900">
-        <div className="container">
+        <div className="container max-w-6xl mx-auto px-4">
           <h2 className="text-4xl font-bold mb-16 text-center">WHAT WE DO</h2>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center">
@@ -116,7 +115,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-32 bg-black">
-        <div className="container text-center">
+        <div className="container max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-8">READY TO JOIN?</h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
             We're looking for talented cybersecurity experts to join our mission.

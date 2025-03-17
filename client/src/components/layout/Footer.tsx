@@ -3,8 +3,8 @@ import { Link } from "wouter";
 export function Footer() {
   return (
     <footer className="bg-black text-white py-16">
-      <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div className="container max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-center">
           <div>
             <h3 className="font-bold text-lg mb-4 tracking-wider">NIGHTHAWK</h3>
             <p className="text-gray-400">
