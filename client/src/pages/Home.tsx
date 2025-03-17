@@ -10,8 +10,6 @@ export default function Home() {
       {/* Hero Section */}
       <motion.section 
         className="relative h-screen flex items-center justify-center overflow-hidden"
-        initial="hidden"
-        animate="visible"
         variants={staggerChildren}
       >
         {/* Animated background */}
@@ -34,31 +32,17 @@ export default function Home() {
 
         <motion.div 
           className="container max-w-5xl mx-auto px-4 text-center"
+          initial="hidden"
+          animate="visible"
           variants={fadeInVariants}
         >
-          <motion.div
-            initial={{ scale: 1.2, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-          >
-            <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-[#FF0080] to-white">
-              SECURING THE DIGITAL FRONTIER
-            </h1>
-          </motion.div>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="text-xl md:text-2xl mb-12 text-gray-300 max-w-3xl mx-auto"
-          >
+          <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-[#FF0080] to-white">
+            SECURING THE DIGITAL FRONTIER
+          </h1>
+          <p className="text-xl md:text-2xl mb-12 text-gray-300 max-w-3xl mx-auto">
             Working with federal agencies to protect against cyber threats and strengthen digital security
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8 }}
-            className="flex justify-center"
-          >
+          </p>
+          <div className="flex justify-center">
             <Link href="/apply">
               <Button 
                 size="lg" 
@@ -69,7 +53,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-[#FF0080] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
               </Button>
             </Link>
-          </motion.div>
+          </div>
         </motion.div>
       </motion.section>
 

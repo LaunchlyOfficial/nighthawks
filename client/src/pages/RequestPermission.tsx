@@ -20,7 +20,7 @@ import { fadeInVariants } from "@/lib/animations";
 
 export default function RequestPermission() {
   const { toast } = useToast();
-  
+
   const form = useForm<InsertPermissionRequest>({
     resolver: zodResolver(insertPermissionRequestSchema),
     defaultValues: {
@@ -51,88 +51,91 @@ export default function RequestPermission() {
   });
 
   return (
-    <motion.div 
-      initial="hidden"
-      animate="visible"
-      variants={fadeInVariants}
-      className="container max-w-2xl py-12"
-    >
-      <h1 className="text-3xl font-bold mb-8">Request Security Testing Permission</h1>
-      
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="companyName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Company Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="min-h-screen pt-24 pb-12 bg-black text-white">
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={fadeInVariants}
+        className="container max-w-2xl mx-auto px-4"
+      >
+        <h1 className="text-4xl font-bold mb-8 text-center">REQUEST SECURITY TESTING PERMISSION</h1>
 
-          <FormField
-            control={form.control}
-            name="websiteUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Website URL</FormLabel>
-                <FormControl>
-                  <Input type="url" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="companyName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="bg-zinc-900 border-zinc-800" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="contactInfo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Information</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Email or phone number"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="websiteUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Website URL</FormLabel>
+                  <FormControl>
+                    <Input type="url" {...field} className="bg-zinc-900 border-zinc-800" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="testingScope"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Testing Scope</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Describe what you want us to test"
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="contactInfo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact Information</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Email or phone number"
+                      className="bg-zinc-900 border-zinc-800"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? "Submitting..." : "Submit Request"}
-          </Button>
-        </form>
-      </Form>
-    </motion.div>
+            <FormField
+              control={form.control}
+              name="testingScope"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Testing Scope</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe what you want us to test"
+                      className="min-h-[100px] bg-zinc-900 border-zinc-800"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              className="w-full bg-[#FF0080] hover:bg-[#FF0080]/80 text-white"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "Submitting..." : "Submit Request"}
+            </Button>
+          </form>
+        </Form>
+      </motion.div>
+    </div>
   );
 }
