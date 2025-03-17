@@ -1,102 +1,92 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { fadeInVariants, staggerChildren, matrixBg } from "@/lib/animations";
-import { Shield, Lock, Search, Code } from "lucide-react";
+import { fadeInVariants, staggerChildren } from "@/lib/animations";
+import { Shield, Lock, Search } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black text-white">
+      {/* Hero Section */}
       <motion.section 
-        className="relative h-[80vh] flex items-center justify-center bg-gradient-to-br from-background to-accent overflow-hidden"
-        animate={matrixBg}
+        className="relative h-screen flex items-center justify-center bg-[#000000]"
+        initial="hidden"
+        animate="visible"
+        variants={staggerChildren}
       >
-        <div className="container relative z-10">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerChildren}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <motion.h1 
-              variants={fadeInVariants}
-              className="text-4xl md:text-6xl font-bold mb-6"
-            >
-              Securing the Digital Frontier
-            </motion.h1>
-            <motion.p 
-              variants={fadeInVariants}
-              className="text-xl mb-8 text-muted-foreground"
-            >
-              We work with the FBI to prevent cybercrime and protect digital assets through ethical hacking.
-            </motion.p>
-            <motion.div variants={fadeInVariants}>
-              <Link href="/apply">
-                <Button size="lg" className="text-lg">
-                  Join Our Mission
-                </Button>
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70" />
+        <motion.div 
+          className="container relative z-10 text-center"
+          variants={fadeInVariants}
+        >
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+            SECURING THE DIGITAL FRONTIER
+          </h1>
+          <p className="text-xl md:text-2xl mb-8 text-gray-300 max-w-3xl mx-auto">
+            Working with federal agencies to protect against cyber threats and strengthen digital security
+          </p>
+          <Link href="/apply">
+            <Button size="lg" variant="outline" className="text-lg border-2 hover:bg-white hover:text-black transition-all duration-300">
+              JOIN THE MISSION
+            </Button>
+          </Link>
+        </motion.div>
       </motion.section>
 
-      <section className="py-20 bg-background">
+      {/* Mission Section */}
+      <section className="py-32 bg-black">
         <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-12">Who We Are</h2>
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <img 
-                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
-                alt="Team working"
-                className="rounded-lg shadow-lg"
-              />
-            </div>
-            <div className="space-y-4">
-              <p className="text-lg">
-                Nighthawk is an elite team of white-hat hackers working in partnership with federal agencies to combat cybercrime and strengthen digital security.
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl font-bold mb-8 text-center">WHO WE ARE</h2>
+            <p className="text-xl text-gray-300 leading-relaxed">
+              Nighthawk is an elite team of white-hat hackers working in partnership with federal agencies to combat cybercrime and strengthen digital security. Our experts conduct ethical hacking operations, vulnerability assessments, and security research to stay ahead of cyber threats.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-32 bg-zinc-900">
+        <div className="container">
+          <h2 className="text-4xl font-bold mb-16 text-center">WHAT WE DO</h2>
+          <div className="grid md:grid-cols-3 gap-12">
+            <div className="text-center">
+              <Shield className="h-16 w-16 mb-6 mx-auto text-primary" />
+              <h3 className="text-2xl font-bold mb-4">CYBERCRIME PREVENTION</h3>
+              <p className="text-gray-300">
+                Proactively identifying and preventing cyber threats before they cause harm.
               </p>
-              <p className="text-lg">
-                Our experts conduct ethical hacking operations, vulnerability assessments, and security research to stay ahead of cyber threats.
+            </div>
+            <div className="text-center">
+              <Lock className="h-16 w-16 mb-6 mx-auto text-primary" />
+              <h3 className="text-2xl font-bold mb-4">SECURITY & PROTECTION</h3>
+              <p className="text-gray-300">
+                Comprehensive security assessments and protection strategies.
+              </p>
+            </div>
+            <div className="text-center">
+              <Search className="h-16 w-16 mb-6 mx-auto text-primary" />
+              <h3 className="text-2xl font-bold mb-4">ETHICAL HACKING</h3>
+              <p className="text-gray-300">
+                Authorized security testing to identify vulnerabilities.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-accent/5">
-        <div className="container">
-          <h2 className="text-3xl font-bold text-center mb-12">What We Do</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card>
-              <CardContent className="pt-6">
-                <Shield className="h-12 w-12 mb-4 text-primary" />
-                <h3 className="text-xl font-semibold mb-2">Cybercrime Prevention</h3>
-                <p className="text-muted-foreground">
-                  We work proactively to identify and prevent cyber threats before they cause harm.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <Lock className="h-12 w-12 mb-4 text-primary" />
-                <h3 className="text-xl font-semibold mb-2">Security & Protection</h3>
-                <p className="text-muted-foreground">
-                  Our team provides comprehensive security assessments and protection strategies.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <Code className="h-12 w-12 mb-4 text-primary" />
-                <h3 className="text-xl font-semibold mb-2">Ethical Hacking</h3>
-                <p className="text-muted-foreground">
-                  We conduct authorized security testing to identify vulnerabilities.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+      {/* CTA Section */}
+      <section className="py-32 bg-black">
+        <div className="container text-center">
+          <h2 className="text-4xl font-bold mb-8">READY TO JOIN?</h2>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            We're looking for talented cybersecurity experts to join our mission.
+          </p>
+          <Link href="/apply">
+            <Button size="lg" variant="outline" className="text-lg border-2 hover:bg-white hover:text-black transition-all duration-300">
+              APPLY NOW
+            </Button>
+          </Link>
         </div>
       </section>
     </div>
