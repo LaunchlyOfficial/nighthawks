@@ -51,20 +51,20 @@ export default function Home() {
               <TypeAnimation
                 sequence={[
                   'PROTECTING YOU',
-                  2000,
+                  3000,
                   'WE ARE',
-                  500,
+                  1000,
                   'HELPING YOU',
-                  2000,
+                  3000,
                   'WE ARE',
-                  500,
+                  1000,
                   'TEACHING YOU',
-                  2000,
+                  3000,
                   'WE ARE',
-                  500,
+                  1000,
                 ]}
                 wrapper="span"
-                speed={50}
+                speed={100}
                 repeat={Infinity}
                 className="text-[#FF0080]"
               />
