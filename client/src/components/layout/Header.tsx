@@ -7,7 +7,6 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
 import { Shield } from "lucide-react";
 
 export function Header() {
@@ -39,13 +38,6 @@ export function Header() {
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                   Join Us
                 </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Link href="/admin">
-                <Button variant="secondary" className={cn("ml-4")}>
-                  Admin
-                </Button>
               </Link>
             </NavigationMenuItem>
           </NavigationMenuList>
