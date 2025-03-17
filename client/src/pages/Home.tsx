@@ -2,12 +2,15 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Shield, Lock, Search } from "lucide-react";
 import { Link } from "wouter";
+import { TypeAnimation } from 'react-type-animation';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section 
+        className="relative h-screen flex items-center justify-center overflow-hidden"
+      >
         {/* Animated background */}
         <motion.div 
           className="absolute inset-0"
@@ -39,8 +42,33 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-[#FF0080] to-white">
-            SECURING THE DIGITAL FRONTIER
+          <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-[#FF0080] to-white">
+              WE ARE{" "}
+            </span>
+            <br />
+            <span className="text-white">
+              <TypeAnimation
+                sequence={[
+                  'PROTECTING YOU',
+                  2000,
+                  'WE ARE',
+                  500,
+                  'HELPING YOU',
+                  2000,
+                  'WE ARE',
+                  500,
+                  'TEACHING YOU',
+                  2000,
+                  'WE ARE',
+                  500,
+                ]}
+                wrapper="span"
+                speed={50}
+                repeat={Infinity}
+                className="text-[#FF0080]"
+              />
+            </span>
           </h1>
           <p className="text-xl md:text-2xl mb-12 text-gray-300 max-w-3xl mx-auto">
             Working with federal agencies to protect against cyber threats and strengthen digital security
