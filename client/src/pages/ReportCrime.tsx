@@ -17,7 +17,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { insertCrimeReportSchema, type InsertCrimeReport } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
-import { fadeInVariants } from "@/lib/animations";
 
 export default function ReportCrime() {
   const { toast } = useToast();
@@ -55,9 +54,9 @@ export default function ReportCrime() {
   return (
     <div className="min-h-screen pt-24 pb-12 bg-black text-white">
       <motion.div 
-        initial="hidden"
-        animate="visible"
-        variants={fadeInVariants}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
         className="container max-w-2xl mx-auto px-4"
       >
         <h1 className="text-4xl font-bold mb-8 text-center">REPORT CYBERCRIME</h1>

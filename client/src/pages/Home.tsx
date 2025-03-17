@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { fadeInVariants, staggerChildren, gradientAnimation } from "@/lib/animations";
 import { Shield, Lock, Search } from "lucide-react";
 import { Link } from "wouter";
 
@@ -8,33 +7,37 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
-      <motion.section 
-        className="relative h-screen flex items-center justify-center overflow-hidden"
-        variants={staggerChildren}
-      >
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Animated background */}
         <motion.div 
           className="absolute inset-0"
-          animate={gradientAnimation}
+          animate={{
+            background: [
+              "linear-gradient(45deg, #000000, #FF0080, #000000)",
+              "linear-gradient(45deg, #000000, #7000FF, #000000)",
+              "linear-gradient(45deg, #FF0080, #000000, #7000FF)",
+              "linear-gradient(45deg, #000000, #FF0080, #000000)"
+            ],
+            transition: {
+              duration: 10,
+              repeat: Infinity,
+              ease: "linear"
+            }
+          }}
         />
 
         {/* Animated grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,black,transparent)]" />
 
-        {/* Animated particles or stars effect */}
-        <div className="absolute inset-0 opacity-50">
-          <div className="absolute inset-0 bg-[radial-gradient(white_1px,transparent_1px)] bg-[length:50px_50px] animate-[twinkle_8s_ease-in-out_infinite]" />
-          <div className="absolute inset-0 bg-[radial-gradient(white_1px,transparent_1px)] bg-[length:100px_100px] animate-[twinkle_12s_ease-in-out_infinite_2s]" />
-        </div>
-
         {/* Content overlay with gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black" />
 
+        {/* Hero Content */}
         <motion.div 
-          className="container max-w-5xl mx-auto px-4 text-center"
-          initial="hidden"
-          animate="visible"
-          variants={fadeInVariants}
+          className="container max-w-5xl mx-auto px-4 text-center relative z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
         >
           <h1 className="text-5xl md:text-8xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-[#FF0080] to-white">
             SECURING THE DIGITAL FRONTIER
@@ -47,15 +50,14 @@ export default function Home() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-lg border-2 hover:bg-[#FF0080] hover:border-[#FF0080] hover:text-white transition-all duration-500 relative overflow-hidden group"
+                className="text-lg border-2 hover:bg-[#FF0080] hover:border-[#FF0080] hover:text-white transition-all duration-500"
               >
-                <span className="relative z-10">JOIN THE MISSION</span>
-                <div className="absolute inset-0 bg-[#FF0080] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+                JOIN THE MISSION
               </Button>
             </Link>
           </div>
         </motion.div>
-      </motion.section>
+      </section>
 
       {/* Mission Section */}
       <section className="py-32 bg-black">

@@ -1,30 +1,23 @@
-import { type TargetAndTransition, type Variant } from "framer-motion";
+import { type TargetAndTransition } from "framer-motion";
 
-export const fadeIn: TargetAndTransition = {
-  opacity: 1,
-  y: 0,
-  transition: { duration: 0.5 }
-};
-
-export const fadeInVariants: Record<string, Variant> = {
+export const fadeIn = {
   hidden: { opacity: 0, y: 20 },
-  visible: fadeIn
-};
-
-export const staggerChildren = {
-  visible: {
-    transition: {
-      staggerChildren: 0.1
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      duration: 0.8,
+      ease: "easeOut"
     }
   }
 };
 
-export const matrixBg: TargetAndTransition = {
-  backgroundPosition: ["0% 0%", "100% 100%"],
-  transition: {
-    duration: 20,
-    ease: "linear",
-    repeat: Infinity
+export const staggerChildren = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.2
+    }
   }
 };
 
@@ -41,3 +34,6 @@ export const gradientAnimation = {
     ease: "linear"
   }
 };
+
+// Add fadeInVariants as an alias for backward compatibility
+export const fadeInVariants = fadeIn;
