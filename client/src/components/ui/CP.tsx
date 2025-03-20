@@ -13,7 +13,7 @@ const CommandPrompt: React.FC = () => {
     e.preventDefault();
     if (input.trim() === 'admin') {
       // Redirect to the admin.html file located in the public directory
-      window.location.href = '/admin.html'; // Adjust the path if necessary
+      window.location.href = '/login.html'; // Adjust the path if necessary
     } else {
       alert('Unknown command.'); // Handle unknown commands
     }
