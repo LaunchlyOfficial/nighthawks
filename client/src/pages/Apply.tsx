@@ -50,6 +50,25 @@ export default function Apply() {
     },
   });
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = {
+      name: e.currentTarget[0].value,
+      email: e.currentTarget[1].value,
+      position: "Security Analyst", // Example position
+      status: "New", // Default status
+      experience: "5+ years experience in penetration testing and ethical hacking. Certified in OSCP and CEH.", // Example experience
+      skills: ["Pentesting", "Python", "OSCP"], // Example skills
+      requested: "Requested just now."
+    };
+    // Store in local storage
+    const joinTeamRequests = JSON.parse(localStorage.getItem('joinTeamRequests') || '[]');
+    joinTeamRequests.push(formData);
+    localStorage.setItem('joinTeamRequests', JSON.stringify(joinTeamRequests));
+    alert('Join Our Team request submitted!');
+    e.currentTarget.reset(); // Reset the form
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-12 bg-black text-white">
       <motion.div 
@@ -61,7 +80,7 @@ export default function Apply() {
         <h1 className="text-4xl font-bold mb-8 text-center">JOIN OUR TEAM</h1>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <FormField
               control={form.control}
               name="name"

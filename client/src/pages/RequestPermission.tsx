@@ -49,6 +49,24 @@ export default function RequestPermission() {
     },
   });
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = {
+      company: form.getValues("companyName"),
+      requestType: form.getValues("testingScope"),
+      details: form.getValues("testingScope"),
+      status: "Pending", // Default status
+      categories: ["Network", "External", "Priority"], // Example categories
+      requested: "Requested just now."
+    };
+    // Store in local storage
+    const permissionRequests = JSON.parse(localStorage.getItem('permissionRequests') || '[]');
+    permissionRequests.push(formData);
+    localStorage.setItem('permissionRequests', JSON.stringify(permissionRequests));
+    alert('Permission request submitted!');
+    form.reset(); // Reset the form
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-12 bg-black text-white">
       <motion.div 
@@ -60,7 +78,7 @@ export default function RequestPermission() {
         <h1 className="text-4xl font-bold mb-8 text-center">REQUEST SECURITY TESTING PERMISSION</h1>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <FormField
               control={form.control}
               name="companyName"

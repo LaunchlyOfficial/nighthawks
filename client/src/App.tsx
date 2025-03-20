@@ -9,7 +9,9 @@ import Home from "@/pages/Home";
 import ReportCrime from "@/pages/ReportCrime";
 import RequestPermission from "@/pages/RequestPermission";
 import Apply from "@/pages/Apply";
-import Admin from "@/pages/Admin";
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import CP from "./components/ui/CP";
 
 function Router() {
   return (
@@ -18,7 +20,8 @@ function Router() {
       <Route path="/report" component={ReportCrime} />
       <Route path="/request" component={RequestPermission} />
       <Route path="/apply" component={Apply} />
-      <Route path="/admin" component={Admin} />
+      <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -35,6 +38,7 @@ function App() {
         <Footer />
       </div>
       <Toaster />
+      <CP />
     </QueryClientProvider>
   );
 }

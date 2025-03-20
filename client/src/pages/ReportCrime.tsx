@@ -51,6 +51,24 @@ export default function ReportCrime() {
     },
   });
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = {
+      title: e.currentTarget[0].value,
+      target: e.currentTarget[1].value,
+      details: e.currentTarget[2].value,
+      urgency: "Urgent", // Default urgency
+      categories: ["DDoS", "Payment System", "Level 2"], // Example categories
+      reported: "Reported just now."
+    };
+    // Store in local storage
+    const crimeReports = JSON.parse(localStorage.getItem('crimeReports') || '[]');
+    crimeReports.push(formData);
+    localStorage.setItem('crimeReports', JSON.stringify(crimeReports));
+    alert('Cyber Crime report submitted!');
+    e.currentTarget.reset(); // Reset the form
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-12 bg-black text-white">
       <motion.div 
@@ -62,7 +80,7 @@ export default function ReportCrime() {
         <h1 className="text-4xl font-bold mb-8 text-center">REPORT CYBERCRIME</h1>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <FormField
               control={form.control}
               name="name"

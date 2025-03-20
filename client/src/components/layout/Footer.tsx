@@ -34,15 +34,22 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-4 tracking-wider">CONTACT</h3>
             <ul className="space-y-2 text-gray-400">
-              <li>contact@nighthawk.org</li>
-              <li>(555) 123-4567</li>
+            <a href="mailto:noreply.nighthawk@gmail.com" className="text-blue-500 hover:underline">noreply.nighthawk@gmail.com</a>
             </ul>
           </div>
           <div>
             <h3 className="font-bold text-lg mb-4 tracking-wider">LEGAL</h3>
             <ul className="space-y-2 text-gray-400">
-              <li>Privacy Policy</li>
-              <li>Terms of Service</li>
+              <li>
+                <Link href="/terms-of-service">
+                  <span className="text-gray-400 hover:text-white cursor-pointer">Terms of Service</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy-policy">
+                  <span className="text-gray-400 hover:text-white cursor-pointer">Privacy Policy</span>
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

@@ -50,18 +50,14 @@ export default function Home() {
             <span className="text-white">
               <TypeAnimation
                 sequence={[
-                  'PROTECTING YOU',
+                  '{PROTECTING YOU}',
                   3000,
-                  'WE ARE',
-                  1000,
-                  'HELPING YOU',
+                  '{HELPING YOU}',
                   3000,
-                  'WE ARE',
-                  1000,
-                  'TEACHING YOU',
+                  '{TEACHING YOU}',
                   3000,
-                  'WE ARE',
-                  1000,
+                  'NIGHTHAWK',
+                  6000,
                 ]}
                 wrapper="span"
                 speed={200}
