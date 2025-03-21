@@ -13,17 +13,17 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            background-color: #121212; /* Dark background */
-            color: #ffffff; /* Light text color */
+            background-color: #121212;
+            color: #ffffff;
         }
         header {
-            background-color: #1f1f1f; /* Darker header */
+            background-color: #1f1f1f;
             color: white;
             padding: 15px;
             text-align: center;
         }
         nav {
-            background-color: #1f1f1f; /* Darker nav */
+            background-color: #1f1f1f;
             display: flex;
             justify-content: center;
             padding: 10px;
@@ -38,35 +38,35 @@
             transition: background-color 0.3s;
         }
         nav a:hover {
-            background-color: #333; /* Hover effect */
+            background-color: #333;
         }
         .main-content {
             padding: 20px;
             flex-grow: 1;
-            overflow-y: auto; /* Allow scrolling */
+            overflow-y: auto;
             display: flex;
-            justify-content: center; /* Center the content */
-            align-items: flex-start; /* Align items to the start */
-            flex-wrap: wrap; /* Allow wrapping */
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
         }
         .card {
-            background-color: #1e1e1e; /* Dark card background */
+            background-color: #1e1e1e;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
             padding: 20px;
             margin: 10px;
-            width: 300px; /* Fixed width for cards */
-            flex: 1 1 300px; /* Allow cards to grow and shrink */
+            width: 300px;
+            flex: 1 1 300px;
         }
         .request {
             margin-bottom: 15px;
             padding: 10px;
-            border: 1px solid #333; /* Dark border */
+            border: 1px solid #333;
             border-radius: 5px;
         }
         .request h3 {
             margin: 0;
-            color: #4CAF50; /* Green color for request titles */
+            color: #4CAF50;
         }
         .request p {
             margin: 5px 0;
@@ -85,15 +85,15 @@
             cursor: pointer;
         }
         .accept {
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50;
             color: white;
         }
         .decline {
-            background-color: #f44336; /* Red */
+            background-color: #f44336;
             color: white;
         }
         .pending {
-            background-color: #FF9800; /* Orange */
+            background-color: #FF9800;
             color: white;
         }
     </style>
@@ -127,118 +127,102 @@
 </div>
 
 <script>
-    // Function to display requests from local storage
-    function displayRequests() {
+    const apiUrl = 'https://underlying-snail-apifornighthawk-1895baa5.koyeb.app/api';
+
+    // Function to display requests from the API
+    async function displayRequests() {
         const joinTeamContainer = document.getElementById('joinTeamRequests');
         const permissionContainer = document.getElementById('permissionRequests');
         const crimeReportsContainer = document.getElementById('crimeReports');
 
-        // Retrieve data from local storage
-        const joinTeamRequests = JSON.parse(localStorage.getItem('joinTeamRequests') || '[]');
-        const permissionRequests = JSON.parse(localStorage.getItem('permissionRequests') || '[]');
-        const crimeReports = JSON.parse(localStorage.getItem('crimeReports') || '[]');
+        try {
+            // Fetch data from your API
+            const joinTeamResponse = await fetch(`${apiUrl}/joinTeamRequests`);
+            const permissionResponse = await fetch(`${apiUrl}/permissionRequests`);
+            const crimeReportsResponse = await fetch(`${apiUrl}/crimeReports`);
 
-        joinTeamRequests.forEach(request => {
-            joinTeamContainer.innerHTML += `
-                <div class="request">
-                    <h3>${request.name}</h3>
-                    <p><strong>Email:</strong> ${request.email}</p>
-                    <p><strong>Position:</strong> ${request.position}</p>
-                    <p class="status">${request.status}</p>
-                    <p>${request.experience}</p>
-                    <p><strong>Skills:</strong> ${request.skills.join(', ')}</p>
-                    <p>${request.requested}</p>
-                    <div class="button-group">
-                        <button class="accept" onclick="acceptRequest('${request.name}')">Accept</button>
-                        <button class="decline" onclick="declineRequest('${request.name}', 'Join Team Request')">Decline</button>
+            // Parse the responses as JSON
+            const joinTeamRequests = await joinTeamResponse.json();
+            const permissionRequests = await permissionResponse.json();
+            const crimeReports = await crimeReportsResponse.json();
+
+            // Loop through and display Join Team Requests
+            joinTeamRequests.forEach(request => {
+                joinTeamContainer.innerHTML += `
+                    <div class="request">
+                        <h3>${request.name}</h3>
+                        <p><strong>Email:</strong> ${request.email}</p>
+                        <p><strong>Position:</strong> ${request.position}</p>
+                        <p class="status">${request.status}</p>
+                        <p>${request.experience}</p>
+                        <p><strong>Skills:</strong> ${request.skills.join(', ')}</p>
+                        <p>${request.requested}</p>
+                        <div class="button-group">
+                            <button class="accept" onclick="handleRequest('${request.name}', 'accept', 'joinTeam')">Accept</button>
+                            <button class="decline" onclick="handleRequest('${request.name}', 'decline', 'joinTeam')">Decline</button>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
 
-        permissionRequests.forEach(request => {
-            permissionContainer.innerHTML += `
-                <div class="request">
-                    <h3>${request.company}</h3>
-                    <p><strong>Request Type:</strong> ${request.requestType}</p>
-                    <p class="status">${request.status}</p>
-                    <p>${request.details}</p>
-                    <p><strong>Categories:</strong> ${request.categories.join(', ')}</p>
-                    <p>${request.requested}</p>
-                    <div class="button-group">
-                        <button onclick="reviewRequest('${request.company}')">Review Request</button>
+            // Loop through and display Permission Requests
+            permissionRequests.forEach(request => {
+                permissionContainer.innerHTML += `
+                    <div class="request">
+                        <h3>${request.company}</h3>
+                        <p><strong>Request Type:</strong> ${request.requestType}</p>
+                        <p class="status">${request.status}</p>
+                        <p>${request.details}</p>
+                        <p><strong>Categories:</strong> ${request.categories.join(', ')}</p>
+                        <p>${request.requested}</p>
+                        <div class="button-group">
+                            <button class="accept" onclick="handleRequest('${request.company}', 'accept', 'permission')">Approve</button>
+                            <button class="decline" onclick="handleRequest('${request.company}', 'decline', 'permission')">Reject</button>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
 
-        crimeReports.forEach(report => {
-            crimeReportsContainer.innerHTML += `
-                <div class="request">
-                    <h3>${report.title}</h3>
-                    <p><strong>Target:</strong> ${report.target}</p>
-                    <p class="status">${report.urgency}</p>
-                    <p>${report.details}</p>
-                    <p><strong>Categories:</strong> ${report.categories.join(', ')}</p>
-                    <p>${report.reported}</p>
-                    <div class="button-group">
-                        <button class="pending" onclick="markAsPending('${report.title}')">Mark as Pending</button>
+            // Loop through and display Cyber Crime Reports
+            crimeReports.forEach(report => {
+                crimeReportsContainer.innerHTML += `
+                    <div class="request">
+                        <h3>${report.title}</h3>
+                        <p><strong>Target:</strong> ${report.target}</p>
+                        <p class="status">${report.urgency}</p>
+                        <p>${report.details}</p>
+                        <p><strong>Categories:</strong> ${report.categories.join(', ')}</p>
+                        <p>${report.reported}</p>
+                        <div class="button-group">
+                            <button class="pending" onclick="handleRequest('${report.title}', 'markPending', 'crimeReport')">Mark as Pending</button>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     }
 
-    function acceptRequest(name) {
-        const acceptedRequests = JSON.parse(localStorage.getItem('acceptedRequests') || '[]');
-        const requestData = {
-            name: name,
-            type: 'Join Team Request', // Example type
-            reviewedAt: new Date().toLocaleString() // Current date and time
-        };
-        acceptedRequests.push(requestData);
-        localStorage.setItem('acceptedRequests', JSON.stringify(acceptedRequests));
+    // Handle request actions (Accept/Decline)
+    async function handleRequest(id, action, type) {
+        try {
+            const url = `${apiUrl}/${type}/${id}/${action}`;
+            const response = await fetch(url, { method: 'POST' });
 
-        // Remove from join team requests
-        removeRequest('joinTeamRequests', name);
-
-        alert(`Request from ${name} has been accepted.`);
+            if (response.ok) {
+                alert(`${action.charAt(0).toUpperCase() + action.slice(1)} successfully!`);
+                displayRequests(); // Refresh the data after action
+            } else {
+                alert('Something went wrong. Try again!');
+            }
+        } catch (error) {
+            console.error('Error handling request:', error);
+            alert('Failed to process the request.');
+        }
     }
 
-    function declineRequest(name, type) {
-        const declinedRequests = JSON.parse(localStorage.getItem('declinedRequests') || '[]');
-        const requestData = {
-            name: name,
-            type: type,
-            reviewedAt: new Date().toLocaleString() // Current date and time
-        };
-        declinedRequests.push(requestData);
-        localStorage.setItem('declinedRequests', JSON.stringify(declinedRequests));
-
-        // Remove from join team requests
-        removeRequest('joinTeamRequests', name);
-
-        alert(`Request from ${name} has been declined. Redirecting to reports page...`);
-        window.location.href = 'reports.html'; // Redirect to reports page
-    }
-
-    function removeRequest(storageKey, name) {
-        const requests = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        const updatedRequests = requests.filter(request => request.name !== name);
-        localStorage.setItem(storageKey, JSON.stringify(updatedRequests));
-    }
-
-    function reviewRequest(company) {
-        alert(`Reviewing request from ${company}.`);
-        // Here you would typically navigate to a review page or show more details
-    }
-
-    function markAsPending(title) {
-        alert(`Report "${title}" has been marked as pending. An email will be sent to the user.`);
-        // Here you would typically send an email notification
-    }
-
-    // Call the function to display requests
+    // Call the function to display requests when the page loads
     displayRequests();
 </script>
 
