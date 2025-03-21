@@ -1,22 +1,3 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { insertPermissionRequestSchema, type InsertPermissionRequest } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
-
 export default function RequestPermission() {
   const { toast } = useToast();
 
@@ -52,24 +33,22 @@ export default function RequestPermission() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = {
-      company: form.getValues("companyName"),
-      requestType: form.getValues("testingScope"),
-      details: form.getValues("testingScope"),
+      companyName: form.getValues("companyName"),
+      websiteUrl: form.getValues("websiteUrl"),
+      contactInfo: form.getValues("contactInfo"),
+      testingScope: form.getValues("testingScope"),
       status: "Pending", // Default status
       categories: ["Network", "External", "Priority"], // Example categories
-      requested: "Requested just now."
+      requested: "Requested just now.",
     };
-    // Store in local storage
-    const permissionRequests = JSON.parse(localStorage.getItem('permissionRequests') || '[]');
-    permissionRequests.push(formData);
-    localStorage.setItem('permissionRequests', JSON.stringify(permissionRequests));
-    alert('Permission request submitted!');
-    form.reset(); // Reset the form
+
+    // Use mutation.mutate to send the data to the API
+    mutation.mutate(formData);
   };
 
   return (
     <div className="min-h-screen pt-24 pb-12 bg-black text-white">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -114,7 +93,7 @@ export default function RequestPermission() {
                 <FormItem>
                   <FormLabel>Contact Information</FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
                       placeholder="Email or phone number"
                       className="bg-zinc-900 border-zinc-800"
                       {...field}
