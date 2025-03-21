@@ -1,4 +1,4 @@
-// services/apiRequest.ts
+// src/services/apiRequest.ts
 
 export async function apiRequest(method: string, endpoint: string, data?: any) {
   const response = await fetch(endpoint, {
