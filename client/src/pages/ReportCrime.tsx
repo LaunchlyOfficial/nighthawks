@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { insertCrimeReportSchema, type InsertCrimeReport } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient"; // Assuming you have an apiRequest utility for making API calls
 
 export default function ReportCrime() {
   const { toast } = useToast();
@@ -32,9 +32,10 @@ export default function ReportCrime() {
     },
   });
 
+  // Mutation hook for API request
   const mutation = useMutation({
     mutationFn: (data: InsertCrimeReport) =>
-      apiRequest("POST", "/api/reports", data),
+      apiRequest("POST", "/api/reports", data), // Your API endpoint for handling reports
     onSuccess: () => {
       toast({
         title: "Report Submitted",
@@ -45,33 +46,38 @@ export default function ReportCrime() {
     onError: (error) => {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Something went wrong!",
         variant: "destructive",
       });
     },
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = {
-      title: e.currentTarget[0].value,
-      target: e.currentTarget[1].value,
-      details: e.currentTarget[2].value,
-      urgency: "Urgent", // Default urgency
-      categories: ["DDoS", "Payment System", "Level 2"], // Example categories
-      reported: "Reported just now."
+      name: e.currentTarget[0].value,
+      email: e.currentTarget[1].value,
+      incidentType: e.currentTarget[2].value,
+      description: e.currentTarget[3].value,
+      evidence: e.currentTarget[4].value,
     };
-    // Store in local storage
-    const crimeReports = JSON.parse(localStorage.getItem('crimeReports') || '[]');
-    crimeReports.push(formData);
-    localStorage.setItem('crimeReports', JSON.stringify(crimeReports));
-    alert('Cyber Crime report submitted!');
-    e.currentTarget.reset(); // Reset the form
+
+    try {
+      // Call the mutation to submit the form data to the API
+      mutation.mutate(formData);
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast({
+        title: "Error",
+        description: "There was an issue submitting your report.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen pt-24 pb-12 bg-black text-white">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -159,12 +165,12 @@ export default function ReportCrime() {
                 <FormItem>
                   <FormLabel>Evidence URL (Optional)</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="url" 
+                    <Input
+                      type="url"
                       placeholder="Link to screenshots or documentation"
                       className="bg-zinc-900 border-zinc-800"
                       {...field}
-                      value={field.value || ''}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
