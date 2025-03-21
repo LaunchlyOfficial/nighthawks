@@ -57,16 +57,15 @@ export default function Apply() {
       email: e.currentTarget[1].value,
       position: "Security Analyst", // Example position
       status: "New", // Default status
-      experience: "5+ years experience in penetration testing and ethical hacking. Certified in OSCP and CEH.", // Example experience
-      skills: ["Pentesting", "Python", "OSCP"], // Example skills
-      requested: "Requested just now."
+      experience: e.currentTarget[2].value, // Experience field value
+      skills: e.currentTarget[3].value.split(",").map(s => s.trim()), // Skills as an array
+      reason: e.currentTarget[4].value, // Reason field value
+      resume: e.currentTarget[5].value, // Resume URL field value
+      requested: "Requested just now.",
     };
-    // Store in local storage
-    const joinTeamRequests = JSON.parse(localStorage.getItem('joinTeamRequests') || '[]');
-    joinTeamRequests.push(formData);
-    localStorage.setItem('joinTeamRequests', JSON.stringify(joinTeamRequests));
-    alert('Join Our Team request submitted!');
-    e.currentTarget.reset(); // Reset the form
+
+    // Use mutation to submit the data
+    mutation.mutate(formData);
   };
 
   return (
