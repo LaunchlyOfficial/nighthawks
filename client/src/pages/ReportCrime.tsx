@@ -1,22 +1,16 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+// src/pages/ReportCrime.tsx
+
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { apiRequest } from "../services/apiRequest"; // Adjust the import path
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { insertCrimeReportSchema, type InsertCrimeReport } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient"; // Assuming you have an apiRequest utility for making API calls
 
 export default function ReportCrime() {
   const { toast } = useToast();
@@ -32,10 +26,9 @@ export default function ReportCrime() {
     },
   });
 
-  // Mutation hook for API request
   const mutation = useMutation({
     mutationFn: (data: InsertCrimeReport) =>
-      apiRequest("POST", "/api/reports", data), // Your API endpoint for handling reports
+      apiRequest("POST", "/api/reports", data), // Use the apiRequest here
     onSuccess: () => {
       toast({
         title: "Report Submitted",
@@ -46,33 +39,29 @@ export default function ReportCrime() {
     onError: (error) => {
       toast({
         title: "Error",
-        description: error.message || "Something went wrong!",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = {
-      name: e.currentTarget[0].value,
-      email: e.currentTarget[1].value,
-      incidentType: e.currentTarget[2].value,
-      description: e.currentTarget[3].value,
-      evidence: e.currentTarget[4].value,
+      title: e.currentTarget[0].value,
+      target: e.currentTarget[1].value,
+      details: e.currentTarget[2].value,
+      urgency: "Urgent", // Default urgency
+      categories: ["DDoS", "Payment System", "Level 2"], // Example categories
+      reported: "Reported just now.",
     };
 
-    try {
-      // Call the mutation to submit the form data to the API
-      mutation.mutate(formData);
-    } catch (error) {
-      console.error("Error submitting report:", error);
-      toast({
-        title: "Error",
-        description: "There was an issue submitting your report.",
-        variant: "destructive",
-      });
-    }
+    // Store in local storage
+    const crimeReports = JSON.parse(localStorage.getItem('crimeReports') || '[]');
+    crimeReports.push(formData);
+    localStorage.setItem('crimeReports', JSON.stringify(crimeReports));
+    alert('Cyber Crime report submitted!');
+    e.currentTarget.reset(); // Reset the form
   };
 
   return (
@@ -165,12 +154,12 @@ export default function ReportCrime() {
                 <FormItem>
                   <FormLabel>Evidence URL (Optional)</FormLabel>
                   <FormControl>
-                    <Input
-                      type="url"
+                    <Input 
+                      type="url" 
                       placeholder="Link to screenshots or documentation"
                       className="bg-zinc-900 border-zinc-800"
                       {...field}
-                      value={field.value || ""}
+                      value={field.value || ''}
                     />
                   </FormControl>
                   <FormMessage />
