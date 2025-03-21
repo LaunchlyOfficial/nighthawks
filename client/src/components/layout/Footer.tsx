@@ -56,6 +56,9 @@ export function Footer() {
         <div className="border-t border-zinc-800 mt-12 pt-8 text-center text-gray-400">
           © {new Date().getFullYear()} Nighthawk. All rights reserved.
         </div>
+        <div className="border-t border-zinc-800 mt-12 pt-8 text-center text-gray-400">
+          © {new Date().getFullYear()} This App Is Made And Designed From Dejvid Gicev | Web25
+        </div>
       </div>
     </footer>
   );
