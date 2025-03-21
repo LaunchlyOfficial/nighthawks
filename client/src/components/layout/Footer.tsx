@@ -34,7 +34,7 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-4 tracking-wider">CONTACT</h3>
             <ul className="space-y-2 text-gray-400">
-            <a href="mailto:noreply.nighthawk@gmail.com" className="text-blue-500 hover:underline">noreply.nighthawk@gmail.com</a>
+            <a href="mailto:noreply.nighthawk@gmail.com" className="text-blue-500 hover:underline">support@nighthawk.koyeb.app</a>
             </ul>
           </div>
           <div>
