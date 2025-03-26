@@ -7,6 +7,10 @@ WORKDIR /app
 COPY package*.json ./
 COPY server/package*.json ./server/
 
+# Copy source code
+COPY server/src/ ./server/src/
+COPY server/tsconfig.json ./server/
+
 # Install dependencies and build
 RUN npm install
 RUN npm run build

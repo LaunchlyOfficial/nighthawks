@@ -10,7 +10,14 @@ export const validateAuth = (req: AuthRequest, res: Response, next: NextFunction
             return res.status(401).json({ error: 'No token provided' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as User;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as {
+            id: number;
+            username: string;
+            role: string;
+            full_name: string;
+            last_login: string | null;
+        };
+
         req.user = decoded;
         
         console.log('Decoded token:', decoded);
@@ -24,15 +31,15 @@ export const validateAuth = (req: AuthRequest, res: Response, next: NextFunction
 };
 
 export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!['admin', 'super_admin'].includes(req.user?.role || '')) {
+    if (req.user?.role !== 'admin' && req.user?.role !== 'super_admin') {
         return res.status(403).json({ error: 'Admin access required' });
     }
     next();
 };
 
 export const requireAnalyst = (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!['analyst', 'admin', 'super_admin'].includes(req.user?.role || '')) {
-        return res.status(403).json({ error: 'Analyst access required' });
+    if (!req.user?.role) {
+        return res.status(403).json({ error: 'Authentication required' });
     }
     next();
 }; 
