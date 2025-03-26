@@ -110,7 +110,7 @@ const MOCK_REPORTS = [
 ];
 
 // Get all reports
-router.get('/', validateAuth, requireAnalyst, async (req, res) => {
+router.get('/', validateAuth, requireAnalyst, async (req: AuthRequest, res: Response) => {
     try {
         // Try database first
         try {

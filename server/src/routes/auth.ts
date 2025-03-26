@@ -124,7 +124,7 @@ router.patch('/admins/:id', validateAuth, async (req, res) => {
 });
 
 // Login route
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: AuthRequest, res: Response) => {
     try {
         const { username, password } = req.body;
         console.log('Login attempt:', { username }); // Add logging

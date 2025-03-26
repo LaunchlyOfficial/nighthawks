@@ -1,11 +1,11 @@
-import type { Request } from 'express';
+import { Request } from 'express';
 
-export interface User {
+export interface AuthRequest extends Request {
+  user?: {
     id: number;
     username: string;
     role: string;
-}
-
-export interface AuthRequest extends Request {
-    user?: User;
+    full_name: string;
+    last_login: string | null;
+  };
 } 
