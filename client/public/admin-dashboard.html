@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - NightHawk</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #FF0080;
+        }
+        .bg-zinc-900 {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .text-gray-400 {
+            color: #b0b0b0;
+        }
+        .text-gray-300 {
+            color: #d0d0d0;
+        }
+        .rounded-lg {
+            border-radius: 8px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+        .mt-8 {
+            margin-top: 2rem;
+        }
+        canvas {
+            width: 100% !important; /* Ensure canvas takes full width */
+            height: auto !important; /* Maintain aspect ratio */
+        }
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background-color: #2a2a2a;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 0.5rem;
+        }
+        
+        .tab.active {
+            background-color: #FF0080;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+        }
+
+        .status-new { background-color: #FF0080; }
+        .status-pending { background-color: #F5A623; }
+        .status-investigating { background-color: #0070F3; }
+        .status-resolved { background-color: #50E3C2; }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-800 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <span class="text-xl font-bold text-[#FF0080]">NIGHTHAWK</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="/admin-dashboard.html" class="text-white hover:text-[#FF0080]">Dashboard</a>
+                    <a href="/reports.html" class="text-gray-300 hover:text-[#FF0080]">Reports</a>
+                    <a href="/permissions.html" class="text-gray-300 hover:text-[#FF0080]">Permissions</a>
+                    <a href="/applications.html" class="text-gray-300 hover:text-[#FF0080]">Applications</a>
+                    <button onclick="logout()" class="text-gray-300 hover:text-[#FF0080]">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 pt-24 pb-12">
+        <h1 class="text-3xl font-bold mb-8">Admin Dashboard</h1>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-zinc-900 p-6 rounded-lg">
+                <h3 class="text-gray-400 text-sm mb-2">Total Reports</h3>
+                <p class="text-3xl font-bold" id="totalReports">-</p>
+            </div>
+            <div class="bg-zinc-900 p-6 rounded-lg">
+                <h3 class="text-gray-400 text-sm mb-2">Pending Reports</h3>
+                <p class="text-3xl font-bold text-yellow-500" id="pendingReports">-</p>
+            </div>
+            <div class="bg-zinc-900 p-6 rounded-lg">
+                <h3 class="text-gray-400 text-sm mb-2">Active Investigations</h3>
+                <p class="text-3xl font-bold text-blue-500" id="activeInvestigations">-</p>
+            </div>
+            <div class="bg-zinc-900 p-6 rounded-lg">
+                <h3 class="text-gray-400 text-sm mb-2">Resolved Cases</h3>
+                <p class="text-3xl font-bold text-green-500" id="resolvedCases">-</p>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Reports by Status -->
+            <div class="bg-zinc-900 p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4">Reports by Status</h3>
+                <canvas id="statusChart"></canvas>
+            </div>
+            <!-- Reports by Type -->
+            <div class="bg-zinc-900 p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4">Reports by Type</h3>
+                <canvas id="typeChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-zinc-900 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-4">Recent Activity</h3>
+            <div class="space-y-4" id="recentActivity">
+                <!-- Activity items will be populated here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Fetch dashboard data
+        async function fetchDashboardData() {
+            try {
+                const token = localStorage.getItem('token');
+                console.log('Token:', token); // Debug line
+                const response = await fetch('http://localhost:3001/api/reports/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        }
+
+        // Update dashboard with data
+        function updateDashboard(data) {
+            // Update stats
+            document.getElementById('totalReports').textContent = data.total_reports;
+            document.getElementById('pendingReports').textContent = data.pending_reports;
+            document.getElementById('activeInvestigations').textContent = data.investigating_reports;
+            document.getElementById('resolvedCases').textContent = data.resolved_reports;
+
+            // Update status chart
+            new Chart(document.getElementById('statusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Investigating', 'Resolved'],
+                    datasets: [{
+                        data: [
+                            data.pending_reports,
+                            data.investigating_reports,
+                            data.resolved_reports
+                        ],
+                        backgroundColor: ['#EAB308', '#3B82F6', '#22C55E']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#fff'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Update type chart if data available
+            if (data.reports_by_type) {
+                new Chart(document.getElementById('typeChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data.reports_by_type),
+                        datasets: [{
+                            label: 'Reports',
+                            data: Object.values(data.reports_by_type),
+                            backgroundColor: '#FF0080'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#fff'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#fff'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Update recent activity
+            if (data.recent_activity) {
+                const activityHtml = data.recent_activity.map(activity => `
+                    <div class="border-l-4 border-[#FF0080] pl-4">
+                        <p class="font-semibold">${activity.type}</p>
+                        <p class="text-sm text-gray-400">${activity.description}</p>
+                        <p class="text-xs text-gray-500">${new Date(activity.timestamp).toLocaleString()}</p>
+                    </div>
+                `).join('');
+                document.getElementById('recentActivity').innerHTML = activityHtml;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        }
+
+        // Initial load
+        checkAuth();
+        fetchDashboardData();
+
+        // Refresh every 30 seconds
+        setInterval(fetchDashboardData, 30000);
+    </script>
+</body>
+</html>

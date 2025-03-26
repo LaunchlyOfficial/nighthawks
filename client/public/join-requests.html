@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Requests - NightHawk</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Same styles as admin-management.html */
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 glass z-50">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <span class="text-xl font-bold gradient-text">NIGHTHAWK</span>
+                </div>
+                <div class="flex items-center space-x-8">
+                    <a href="/admin-dashboard.html" class="text-gray-300 hover:text-[#FF0080]">Dashboard</a>
+                    <a href="/reports.html" class="text-gray-300 hover:text-[#FF0080]">Reports</a>
+                    <a href="/join-requests.html" class="text-white border-b-2 border-[#FF0080]">Join Requests</a>
+                    <a href="/admin-management.html" class="text-gray-300 hover:text-[#FF0080]">Admin Management</a>
+                    <button onclick="logout()" class="text-gray-300 hover:text-[#FF0080]">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 pt-24 pb-12">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold gradient-text">Join Requests</h1>
+        </div>
+
+        <!-- Requests List -->
+        <div class="glass rounded-xl p-8">
+            <div class="space-y-4" id="requestsList">
+                <!-- Requests will be populated here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+        }
+
+        async function fetchRequests() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:3001/api/join', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const requests = await response.json();
+                displayRequests(requests);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function displayRequests(requests) {
+            const requestsList = document.getElementById('requestsList');
+            requestsList.innerHTML = requests.map(request => `
+                <div class="glass p-6 rounded-xl space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-xl font-semibold">${request.full_name}</h3>
+                            <p class="text-gray-400">${request.email}</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-sm ${getStatusColor(request.status)}">
+                            ${request.status}
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-gray-400">Position</p>
+                            <p>${request.position}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Experience</p>
+                            <p>${request.experience}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Skills</p>
+                        <div class="flex flex-wrap gap-2 mt-1">
+                            ${request.skills.map(skill => `
+                                <span class="px-2 py-1 rounded-full bg-zinc-800 text-sm">${skill}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Motivation</p>
+                        <p class="mt-1">${request.motivation}</p>
+                    </div>
+                    ${request.status === 'pending' ? `
+                        <div class="flex space-x-4 mt-4">
+                            <button onclick="updateStatus(${request.id}, 'approved')"
+                                class="px-4 py-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30">
+                                Approve
+                            </button>
+                            <button onclick="updateStatus(${request.id}, 'rejected')"
+                                class="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30">
+                                Reject
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                pending: 'bg-yellow-500/20 text-yellow-400',
+                approved: 'bg-green-500/20 text-green-400',
+                rejected: 'bg-red-500/20 text-red-400'
+            };
+            return colors[status] || 'bg-gray-500/20 text-gray-400';
+        }
+
+        async function updateStatus(id, status) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:3001/api/join/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                await fetchRequests();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        }
+
+        // Initial load
+        checkAuth();
+        fetchRequests();
+    </script>
+</body>
+</html> 

@@ -12,6 +12,10 @@ import Apply from "@/pages/Apply";
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import CP from "./components/ui/CP";
+import ReportStatus from "@/pages/ReportStatus";
+import Login from "@/pages/Login";
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 function Router() {
   return (
@@ -22,12 +26,20 @@ function Router() {
       <Route path="/apply" component={Apply} />
       <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/report-status/:id" component={ReportStatus} />
+      <Route path="/login" component={Login} />
       <Route component={NotFound} />
     </Switch>
   );
 }
 
 function App() {
+  const { checkAuth } = useAuth();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col">

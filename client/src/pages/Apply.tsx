@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { insertApplicationSchema, type InsertApplication } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
+import { applicationApi } from '@/services/api';
 
 export default function Apply() {
   const { toast } = useToast();
@@ -24,16 +24,18 @@ export default function Apply() {
     resolver: zodResolver(insertApplicationSchema),
     defaultValues: {
       name: "",
-      skills: [],
+      email: "",
+      position: "Security Analyst",
       experience: "",
+      skills: [],
       reason: "",
       resume: "",
+      status: "New"
     },
   });
 
   const mutation = useMutation({
-    mutationFn: (data: InsertApplication) =>
-      apiRequest("POST", "/api/applications", data),
+    mutationFn: (data: InsertApplication) => applicationApi.submitApplication(data),
     onSuccess: () => {
       toast({
         title: "Application Submitted",
@@ -41,31 +43,24 @@ export default function Apply() {
       });
       form.reset();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to submit application",
         variant: "destructive",
       });
     },
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = {
-      name: e.currentTarget[0].value,
-      email: e.currentTarget[1].value,
-      position: "Security Analyst", // Example position
-      status: "New", // Default status
-      experience: e.currentTarget[2].value, // Experience field value
-      skills: e.currentTarget[3].value.split(",").map(s => s.trim()), // Skills as an array
-      reason: e.currentTarget[4].value, // Reason field value
-      resume: e.currentTarget[5].value, // Resume URL field value
-      requested: "Requested just now.",
+  const onSubmit = (data: InsertApplication) => {
+    // Convert skills string to array if needed
+    const formattedData = {
+      ...data,
+      skills: typeof data.skills === 'string' 
+        ? data.skills.split(',').map(s => s.trim()) 
+        : data.skills
     };
-
-    // Use mutation to submit the data
-    mutation.mutate(formData);
+    mutation.mutate(formattedData);
   };
 
   return (
@@ -79,7 +74,7 @@ export default function Apply() {
         <h1 className="text-4xl font-bold mb-8 text-center">JOIN OUR TEAM</h1>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="name"
@@ -88,6 +83,24 @@ export default function Apply() {
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
                     <Input {...field} className="bg-zinc-900 border-zinc-800" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="email" 
+                      {...field} 
+                      className="bg-zinc-900 border-zinc-800" 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -105,7 +118,7 @@ export default function Apply() {
                       placeholder="e.g. Penetration Testing, Network Security, Python"
                       className="bg-zinc-900 border-zinc-800"
                       onChange={(e) => field.onChange(e.target.value.split(',').map(s => s.trim()))}
-                      value={field.value.join(', ')}
+                      value={Array.isArray(field.value) ? field.value.join(', ') : field.value}
                     />
                   </FormControl>
                   <FormMessage />
@@ -154,7 +167,7 @@ export default function Apply() {
               name="resume"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Resume URL</FormLabel>
+                  <FormLabel>Resume URL (Optional)</FormLabel>
                   <FormControl>
                     <Input 
                       type="url"

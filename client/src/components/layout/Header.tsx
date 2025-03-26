@@ -1,47 +1,37 @@
 import { Link } from "wouter";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 import { Shield } from "lucide-react";
 
 export function Header() {
   return (
-    <header className="fixed top-0 z-50 w-full bg-black/50 backdrop-blur-md">
-      <div className="container max-w-6xl mx-auto px-4">
-        <div className="flex h-20 items-center justify-center">
-          <Link href="/" className="absolute left-4 flex items-center space-x-2">
-            <Shield className="h-8 w-8 text-white" />
-            <span className="font-bold text-2xl text-white tracking-wider">NIGHTHAWK</span>
-          </Link>
-          <NavigationMenu>
-            <NavigationMenuList className="space-x-8">
-              <NavigationMenuItem>
-                <Link href="/report">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle() + " text-white hover:text-primary"}>
-                    REPORT CRIME
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/request">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle() + " text-white hover:text-primary"}>
-                    REQUEST PERMISSION
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/apply">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle() + " text-white hover:text-primary"}>
-                    JOIN US
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-zinc-800">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center space-x-2">
+            <Shield className="h-6 w-6 text-white" />
+            <Link href="/">
+              <span className="text-xl font-bold text-white cursor-pointer">
+                NIGHTHAWK
+              </span>
+            </Link>
+          </div>
+
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link href="/report">
+              <span className="text-gray-300 hover:text-white cursor-pointer">
+                Report Crime
+              </span>
+            </Link>
+            <Link href="/request">
+              <span className="text-gray-300 hover:text-white cursor-pointer">
+                Request Permission
+              </span>
+            </Link>
+            <Link href="/apply">
+              <span className="text-gray-300 hover:text-white cursor-pointer">
+                Apply
+              </span>
+            </Link>
+          </nav>
         </div>
       </div>
     </header>

@@ -1,3 +1,15 @@
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { permissionApi } from '@/services/api';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Form, FormField, FormLabel, FormControl, FormMessage, FormItem } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { motion } from "framer-motion";
+import { insertPermissionRequestSchema, type InsertPermissionRequest } from "@shared/schema";
+
 export default function RequestPermission() {
   const { toast } = useToast();
 
@@ -12,8 +24,7 @@ export default function RequestPermission() {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: InsertPermissionRequest) =>
-      apiRequest("POST", "/api/permissions", data),
+    mutationFn: (data: InsertPermissionRequest) => permissionApi.submitRequest(data),
     onSuccess: () => {
       toast({
         title: "Request Submitted",
@@ -21,29 +32,17 @@ export default function RequestPermission() {
       });
       form.reset();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to submit request",
         variant: "destructive",
       });
     },
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = {
-      companyName: form.getValues("companyName"),
-      websiteUrl: form.getValues("websiteUrl"),
-      contactInfo: form.getValues("contactInfo"),
-      testingScope: form.getValues("testingScope"),
-      status: "Pending", // Default status
-      categories: ["Network", "External", "Priority"], // Example categories
-      requested: "Requested just now.",
-    };
-
-    // Use mutation.mutate to send the data to the API
-    mutation.mutate(formData);
+  const onSubmit = (data: InsertPermissionRequest) => {
+    mutation.mutate(data);
   };
 
   return (
@@ -57,7 +56,7 @@ export default function RequestPermission() {
         <h1 className="text-4xl font-bold mb-8 text-center">REQUEST SECURITY TESTING PERMISSION</h1>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="companyName"

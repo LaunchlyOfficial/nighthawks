@@ -6,14 +6,25 @@ import { apiRequest } from "../services/apiRequest"; // Adjust the import path
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Form, FormField, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormItem
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { insertCrimeReportSchema, type InsertCrimeReport } from "@shared/schema";
+import { motion } from "framer-motion";
+import { useLocation } from "wouter";
+import { reportApi } from '@/services/api';
 
 export default function ReportCrime() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const form = useForm<InsertCrimeReport>({
     resolver: zodResolver(insertCrimeReportSchema),
@@ -27,14 +38,22 @@ export default function ReportCrime() {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: InsertCrimeReport) =>
-      apiRequest("POST", "/api/reports", data), // Use the apiRequest here
-    onSuccess: () => {
+    mutationFn: (data) => reportApi.submitReport(data),
+    onSuccess: (data) => {
       toast({
         title: "Report Submitted",
         description: "We will review your report and take appropriate action.",
       });
+
+      // Store in localStorage
+      const crimeReports = JSON.parse(localStorage.getItem('crimeReports') || '[]');
+      crimeReports.push(data);
+      localStorage.setItem('crimeReports', JSON.stringify(crimeReports));
+
       form.reset();
+      
+      // Redirect to status page
+      setLocation(`/report-status/${data.reportId}`);
     },
     onError: (error) => {
       toast({
@@ -45,23 +64,8 @@ export default function ReportCrime() {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = {
-      title: e.currentTarget[0].value,
-      target: e.currentTarget[1].value,
-      details: e.currentTarget[2].value,
-      urgency: "Urgent", // Default urgency
-      categories: ["DDoS", "Payment System", "Level 2"], // Example categories
-      reported: "Reported just now.",
-    };
-
-    // Store in local storage
-    const crimeReports = JSON.parse(localStorage.getItem('crimeReports') || '[]');
-    crimeReports.push(formData);
-    localStorage.setItem('crimeReports', JSON.stringify(crimeReports));
-    alert('Cyber Crime report submitted!');
-    e.currentTarget.reset(); // Reset the form
+  const onSubmit = (data: InsertCrimeReport) => {
+    mutation.mutate(data);
   };
 
   return (
@@ -75,7 +79,7 @@ export default function ReportCrime() {
         <h1 className="text-4xl font-bold mb-8 text-center">REPORT CYBERCRIME</h1>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="name"

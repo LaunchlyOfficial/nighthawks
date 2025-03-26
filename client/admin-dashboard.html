@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - NightHawk</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Dark theme for charts */
+        :root {
+            --chart-background: rgba(17, 17, 17, 0.7);
+            --chart-grid: rgba(255, 255, 255, 0.1);
+            --chart-text: rgba(255, 255, 255, 0.7);
+        }
+        
+        .chart-container {
+            background: var(--chart-background);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-800">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="/admin-dashboard.html" class="text-white border-b-2 border-[#FF0080]">Dashboard</a>
+                    <a href="/admin-management.html" class="text-gray-300 hover:text-white">Admin Management</a>
+                    <a href="/permissions.html" class="text-gray-300 hover:text-white">Permissions</a>
+                    <a href="/reports.html" class="text-gray-300 hover:text-white">Reports</a>
+                    <a href="/join-requests.html" class="text-gray-300 hover:text-white">Join Requests</a>
+                    <button onclick="logout()" class="text-gray-300 hover:text-white">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-zinc-900/80 backdrop-blur-sm rounded-xl border border-zinc-800 p-6">
+                <h3 class="text-lg font-semibold mb-2">Total Reports</h3>
+                <p class="text-3xl font-bold text-[#FF0080]" id="totalReports">-</p>
+            </div>
+            <div class="bg-zinc-900/80 backdrop-blur-sm rounded-xl border border-zinc-800 p-6">
+                <h3 class="text-lg font-semibold mb-2">Active Investigations</h3>
+                <p class="text-3xl font-bold text-[#FF0080]" id="activeInvestigations">-</p>
+            </div>
+            <div class="bg-zinc-900/80 backdrop-blur-sm rounded-xl border border-zinc-800 p-6">
+                <h3 class="text-lg font-semibold mb-2">Pending Join Requests</h3>
+                <p class="text-3xl font-bold text-[#FF0080]" id="pendingJoinRequests">-</p>
+                <a href="/join-requests.html" class="text-sm text-[#FF0080] hover:text-opacity-80">View all →</a>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Security Metrics Pentagram -->
+            <div class="chart-container">
+                <canvas id="securityMetricsChart"></canvas>
+            </div>
+            <!-- Team Performance Pentagram -->
+            <div class="chart-container">
+                <canvas id="teamPerformanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Timeline Chart -->
+        <div class="chart-container mb-8">
+            <canvas id="timelineChart"></canvas>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-zinc-900/80 backdrop-blur-sm rounded-xl border border-zinc-800 p-6">
+            <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+            <div id="recentActivity" class="space-y-4">
+                <!-- Activity items will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    async function fetchStats() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            // Fetch join requests count
+            const joinResponse = await fetch('/api/join', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const joinRequests = await joinResponse.json();
+            const pendingRequests = joinRequests.filter(req => req.status === 'pending').length;
+            document.getElementById('pendingJoinRequests').textContent = pendingRequests;
+
+            const response = await fetch('/api/reports/stats', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            updateDashboard(data);
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+        }
+    }
+
+    function updateDashboard(data) {
+        // Update stats
+        document.getElementById('totalReports').textContent = data.total_reports;
+        document.getElementById('activeInvestigations').textContent = data.investigating_reports;
+        document.getElementById('pendingJoinRequests').textContent = pendingRequests;
+
+        // Security Metrics Pentagram
+        new Chart(document.getElementById('securityMetricsChart'), {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Threat Detection',
+                    'Response Time',
+                    'Resolution Rate',
+                    'Risk Assessment',
+                    'Compliance'
+                ],
+                datasets: [{
+                    label: 'Current Performance',
+                    data: [
+                        calculateThreatDetection(data),
+                        calculateResponseTime(data),
+                        calculateResolutionRate(data),
+                        calculateRiskAssessment(data),
+                        calculateCompliance(data)
+                    ],
+                    backgroundColor: 'rgba(255, 0, 128, 0.2)',
+                    borderColor: '#FF0080',
+                    pointBackgroundColor: '#FF0080',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#FF0080'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        pointLabels: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Security Metrics',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                }
+            }
+        });
+
+        // Team Performance Pentagram
+        new Chart(document.getElementById('teamPerformanceChart'), {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Investigation Speed',
+                    'Report Quality',
+                    'Team Collaboration',
+                    'Knowledge Base',
+                    'Training Progress'
+                ],
+                datasets: [{
+                    label: 'Team Metrics',
+                    data: [
+                        calculateInvestigationSpeed(data),
+                        calculateReportQuality(data),
+                        calculateTeamCollaboration(data),
+                        calculateKnowledgeBase(data),
+                        calculateTrainingProgress(data)
+                    ],
+                    backgroundColor: 'rgba(255, 0, 128, 0.2)',
+                    borderColor: '#FF0080',
+                    pointBackgroundColor: '#FF0080',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#FF0080'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        pointLabels: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Team Performance',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                }
+            }
+        });
+
+        // Add calculation functions
+        function calculateThreatDetection(data) {
+            // Calculate based on successful threat identifications
+            return (data.investigating_reports / data.total_reports) * 100;
+        }
+
+        function calculateResponseTime(data) {
+            // Calculate average response time metric
+            return Math.min(100, (data.resolved_reports / data.investigating_reports) * 100);
+        }
+
+        function calculateResolutionRate(data) {
+            // Calculate resolution success rate
+            return (data.resolved_reports / data.total_reports) * 100;
+        }
+
+        function calculateRiskAssessment(data) {
+            // Calculate risk assessment accuracy
+            return Math.min(100, ((data.resolved_reports + data.investigating_reports) / data.total_reports) * 100);
+        }
+
+        function calculateCompliance(data) {
+            // Calculate compliance score
+            return 85; // Example fixed value, replace with actual calculation
+        }
+
+        function calculateInvestigationSpeed(data) {
+            // Calculate average investigation completion speed
+            return Math.min(100, (data.resolved_reports / (data.total_reports - data.pending_reports)) * 100);
+        }
+
+        function calculateReportQuality(data) {
+            // Calculate report quality metric
+            return 90; // Example fixed value, replace with actual calculation
+        }
+
+        function calculateTeamCollaboration(data) {
+            // Calculate team collaboration score
+            return 95; // Example fixed value, replace with actual calculation
+        }
+
+        function calculateKnowledgeBase(data) {
+            // Calculate knowledge base utilization
+            return 80; // Example fixed value, replace with actual calculation
+        }
+
+        function calculateTrainingProgress(data) {
+            // Calculate team training progress
+            return 75; // Example fixed value, replace with actual calculation
+        }
+
+        // Update timeline chart
+        new Chart(document.getElementById('timelineChart'), {
+            type: 'line',
+            data: {
+                labels: data.timeline.map(t => t.date),
+                datasets: [{
+                    label: 'New Reports',
+                    data: data.timeline.map(t => t.count),
+                    borderColor: '#FF0080',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Reports Timeline',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Update recent activity
+        const recentActivity = document.getElementById('recentActivity');
+        recentActivity.innerHTML = data.recent_activity.map(activity => `
+            <div class="border-l-4 border-[#FF0080] pl-4">
+                <p class="font-semibold">${activity.type}</p>
+                <p class="text-sm text-gray-400">${activity.description}</p>
+                <p class="text-xs text-gray-500">${new Date(activity.timestamp).toLocaleString()}</p>
+            </div>
+        `).join('');
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+    }
+
+    // Initial fetch
+    fetchStats();
+
+    // Refresh every 30 seconds
+    setInterval(fetchStats, 30000);
+    </script>
+</body>
+</html> 

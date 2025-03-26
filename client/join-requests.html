@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Requests - NightHawk</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-800">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl font-bold bg-gradient-to-r from-[#FF0080] to-[#FF4D4D] bg-clip-text text-transparent">
+                    NIGHTHAWK ADMIN
+                </h1>
+                <div class="flex items-center space-x-8">
+                    <a href="/admin-dashboard.html" class="text-white hover:text-gray-300">Dashboard</a>
+                    <a href="/join-requests.html" class="text-white border-b-2 border-[#FF0080]">Join Requests</a>
+                    <button onclick="logout()" class="text-white hover:text-gray-300">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Join Requests List -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-2xl font-bold mb-6 text-black">Join Requests</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left p-4 text-black">Full Name</th>
+                            <th class="text-left p-4 text-black">Email</th>
+                            <th class="text-left p-4 text-black">Position</th>
+                            <th class="text-left p-4 text-black">Status</th>
+                            <th class="text-left p-4 text-black">Date</th>
+                            <th class="text-left p-4 text-black">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsList" class="text-black">
+                        <!-- Requests will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full">
+            <h3 class="text-xl font-bold mb-4 text-black">Review Join Request</h3>
+            <div id="requestDetails" class="mb-6 space-y-4 text-black">
+                <!-- Request details will be inserted here -->
+            </div>
+            <form id="reviewForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-black mb-1">Status</label>
+                    <select name="status" required class="w-full p-2 border rounded text-black">
+                        <option value="approved">Approve</option>
+                        <option value="rejected">Reject</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-black mb-1">Notes</label>
+                    <textarea name="notes" rows="3" class="w-full p-2 border rounded text-black"></textarea>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeReviewModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-[#FF0080] text-white rounded hover:bg-opacity-90">
+                        Submit Review
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    let currentRequestId = null;
+
+    async function fetchRequests() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/join', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const requests = await response.json();
+            const tbody = document.getElementById('requestsList');
+            tbody.innerHTML = requests.map(request => `
+                <tr class="text-black">
+                    <td class="px-6 py-4 text-black">${request.full_name}</td>
+                    <td class="px-6 py-4 text-black">${request.email}</td>
+                    <td class="px-6 py-4 text-black">${request.position}</td>
+                    <td class="px-6 py-4 text-black">
+                        <span class="px-2 py-1 rounded ${getStatusClass(request.status)}">
+                            ${request.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-black">${new Date(request.created_at).toLocaleString()}</td>
+                    <td class="px-6 py-4">
+                        <button onclick="openReviewModal(${JSON.stringify(request)})"
+                            class="text-sm text-[#FF0080] hover:text-opacity-80">
+                            Review
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function getStatusClass(status) {
+        switch (status) {
+            case 'approved': return 'bg-green-100 text-green-800';
+            case 'rejected': return 'bg-red-100 text-red-800';
+            default: return 'bg-yellow-100 text-yellow-800';
+        }
+    }
+
+    function openReviewModal(request) {
+        currentRequestId = request.id;
+        const modal = document.getElementById('reviewModal');
+        const details = document.getElementById('requestDetails');
+        
+        details.innerHTML = `
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="font-semibold">Full Name</p>
+                    <p>${request.full_name}</p>
+                </div>
+                <div>
+                    <p class="font-semibold">Email</p>
+                    <p>${request.email}</p>
+                </div>
+                <div>
+                    <p class="font-semibold">Position</p>
+                    <p>${request.position}</p>
+                </div>
+                <div>
+                    <p class="font-semibold">Experience</p>
+                    <p>${request.experience}</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p class="font-semibold">Skills</p>
+                <p>${request.skills.join(', ')}</p>
+            </div>
+            <div class="mt-4">
+                <p class="font-semibold">Motivation</p>
+                <p>${request.motivation}</p>
+            </div>
+        `;
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeReviewModal() {
+        const modal = document.getElementById('reviewModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        currentRequestId = null;
+    }
+
+    async function submitReview(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/api/join/${currentRequestId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status: formData.get('status'),
+                    notes: formData.get('notes')
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            closeReviewModal();
+            form.reset();
+            fetchRequests();
+            alert('Review submitted successfully!');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to submit review');
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+    }
+
+    // Set up event listeners
+    document.getElementById('reviewForm').addEventListener('submit', submitReview);
+
+    // Initial fetch
+    fetchRequests();
+    </script>
+</body>
+</html> 

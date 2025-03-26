@@ -39,9 +39,29 @@ export const applications = pgTable("applications", {
 });
 
 export const insertUserSchema = createInsertSchema(users);
-export const insertCrimeReportSchema = createInsertSchema(crimeReports);
-export const insertPermissionRequestSchema = createInsertSchema(permissionRequests);
-export const insertApplicationSchema = createInsertSchema(applications);
+export const insertCrimeReportSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  incidentType: z.string().min(1, "Incident type is required"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  evidence: z.string().optional(),
+});
+export const insertPermissionRequestSchema = z.object({
+  companyName: z.string().min(1, "Company name is required"),
+  websiteUrl: z.string().url("Invalid website URL"),
+  contactInfo: z.string().min(1, "Contact information is required"),
+  testingScope: z.string().min(10, "Testing scope must be at least 10 characters"),
+});
+export const insertApplicationSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  email: z.string().email("Valid email is required"),
+  position: z.string().default("Security Analyst"),
+  experience: z.string().min(10, "Please provide more details about your experience"),
+  skills: z.array(z.string()).min(1, "At least one skill is required"),
+  reason: z.string().min(10, "Please tell us why you want to join"),
+  resume: z.string().url().optional(),
+  status: z.string().default("New")
+});
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -51,3 +71,15 @@ export type PermissionRequest = typeof permissionRequests.$inferSelect;
 export type InsertPermissionRequest = z.infer<typeof insertPermissionRequestSchema>;
 export type Application = typeof applications.$inferSelect;
 export type InsertApplication = z.infer<typeof insertApplicationSchema>;
+
+export const updateReportStatusSchema = z.object({
+  status: z.enum(['pending', 'investigating', 'resolved', 'rejected']),
+});
+
+export type UpdateReportStatus = z.infer<typeof updateReportStatusSchema>;
+
+export const updatePermissionStatusSchema = z.object({
+  status: z.enum(['pending', 'approved', 'rejected']),
+});
+
+export type UpdatePermissionStatus = z.infer<typeof updatePermissionStatusSchema>;
