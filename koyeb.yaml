@@ -7,9 +7,12 @@ service:
       value: "production"
     - name: PORT
       value: "8000"
+    - name: PUBLIC_URL
+      value: "https://magnificent-candis-nighthawkofficial-86c67078.koyeb.app"
   ports:
     - port: 8000
       http: "/"
+      public: true
   resources:
     cpu_limit: "0.25"
     memory_limit: "512Mi"

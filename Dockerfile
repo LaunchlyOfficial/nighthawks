@@ -5,14 +5,18 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 
-# Copy source code
-COPY server/src/ ./server/src/
-COPY server/tsconfig.json ./server/
-
-# Install dependencies and build
+# Install dependencies
 RUN npm install
+RUN cd client && npm install
+RUN cd server && npm install
+
+# Copy source code
+COPY . .
+
+# Build client and server
 RUN npm run build
 
 # Production stage
@@ -20,11 +24,11 @@ FROM node:18-slim
 
 WORKDIR /app
 
-# Copy package files and built code
+# Copy built files and production dependencies
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/server/dist ./server/dist
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/server/package*.json ./server/
-COPY --from=builder /app/server/dist ./server/dist
-COPY client/ ./client/
 
 # Install production dependencies only
 RUN npm ci --only=production && \

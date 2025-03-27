@@ -18,11 +18,11 @@ dotenv.config();
 
 const app = express();
 
-// Configure CORS to allow requests from the client
+// Configure CORS to allow requests from anywhere
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CLIENT_URL 
-    : 'http://localhost:5173', // Vite's default port
+  origin: '*', // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
 

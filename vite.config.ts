@@ -15,4 +15,15 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
   },
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      '.trycloudflare.com',
+      '.koyeb.app'
+    ]
+  }
 });
