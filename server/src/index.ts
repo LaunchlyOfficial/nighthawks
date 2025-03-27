@@ -18,7 +18,14 @@ dotenv.config();
 
 const app = express();
 
-// CORS configuration - not needed since everything is on same port
+// Configure CORS to allow requests from the client
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.CLIENT_URL 
+    : 'http://localhost:5173', // Vite's default port
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Apply rate limiting
@@ -42,7 +49,7 @@ app.get('*', (req, res) => {
 
 app.use(errorHandler);
 
-const PORT = 8000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 }); 

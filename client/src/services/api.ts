@@ -8,6 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true // Important for CORS with credentials
 });
 
 // Add auth token to requests if it exists
@@ -90,7 +91,6 @@ export const applicationApi = {
   },
   getApplications: async () => {
     const response = await api.get('/applications/admin');
-    return response.data;
   },
 };
 

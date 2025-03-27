@@ -8,22 +8,27 @@ import { useToast } from '@/hooks/use-toast';
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
     try {
       await login({ username, password });
       setLocation('/admin-dashboard');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: "Error",
-        description: "Invalid credentials",
+        description: error.response?.data?.error || "Failed to login",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,6 +69,7 @@ export default function Login() {
           <Button
             type="submit"
             className="w-full bg-[#FF0080] hover:bg-[#FF0080]/80 text-white"
+            disabled={isLoading}
           >
             Login
           </Button>
