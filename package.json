@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev:client": "cd client && vite",
-    "dev:server": "cd server && npx vite",
-    "dev": "concurrently \"npm vite:client\" \"npm run dev:server\"",
+    "dev:server": "cd server && npm run dev",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "build": "cd client && vite build && cd ../server && npm run build",
     "start": "cd server && npm run dev"
   },
