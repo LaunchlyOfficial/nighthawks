@@ -4,289 +4,344 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - NightHawk</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/nav.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
             background-color: #1a1a1a;
             color: #ffffff;
-            margin: 0;
-            padding: 0;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        .card {
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        h1, h2, h3 {
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+        }
+        .semi-donut {
+            position: relative;
+            height: 200px;
+        }
+        .percent-display {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
             color: #FF0080;
         }
-        .bg-zinc-900 {
-            background-color: #2a2a2a;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
+        .gradient-text {
+            background: linear-gradient(45deg, #FF0080, #FF4D4D);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        .text-gray-400 {
-            color: #b0b0b0;
+        .live-info {
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 0, 128, 0.1);
+            border: 1px solid rgba(255, 0, 128, 0.2);
         }
-        .text-gray-300 {
-            color: #d0d0d0;
+        .progress {
+            height: 8px;
+            background-color: #3a3a3a;
         }
-        .rounded-lg {
-            border-radius: 8px;
+        .progress-bar {
+            background: linear-gradient(45deg, #FF0080, #FF4D4D);
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .mb-8 {
-            margin-bottom: 2rem;
-        }
-        .mt-8 {
-            margin-top: 2rem;
-        }
-        canvas {
-            width: 100% !important; /* Ensure canvas takes full width */
-            height: auto !important; /* Maintain aspect ratio */
-        }
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .tab {
-            padding: 0.75rem 1.5rem;
-            background-color: #2a2a2a;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 0.5rem;
-        }
-        
-        .tab.active {
-            background-color: #FF0080;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-        }
-
-        .status-new { background-color: #FF0080; }
-        .status-pending { background-color: #F5A623; }
-        .status-investigating { background-color: #0070F3; }
-        .status-resolved { background-color: #50E3C2; }
     </style>
 </head>
-<body class="bg-black text-white min-h-screen">
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-800 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center space-x-4">
-                    <span class="text-xl font-bold text-[#FF0080]">NIGHTHAWK</span>
+<body>
+    <!-- Navigation will be inserted here by nav.js -->
+    
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="gradient-text">Dashboard Overview</h1>
+            <div class="live-info px-3 py-2">
+                <span class="text-success">●</span> Live Data
+            </div>
+        </div>
+
+        <!-- Main Stats -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="semi-donut">
+                            <canvas id="completionChart"></canvas>
+                            <div class="percent-display">76%</div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <h6 class="text-muted">Completion Rate</h6>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-6">
-                    <a href="/admin-dashboard.html" class="text-white hover:text-[#FF0080]">Dashboard</a>
-                    <a href="/reports.html" class="text-gray-300 hover:text-[#FF0080]">Reports</a>
-                    <a href="/permissions.html" class="text-gray-300 hover:text-[#FF0080]">Permissions</a>
-                    <a href="/applications.html" class="text-gray-300 hover:text-[#FF0080]">Applications</a>
-                    <button onclick="logout()" class="text-gray-300 hover:text-[#FF0080]">Logout</button>
+            </div>
+            <div class="col-md-9">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Monthly Trends</h5>
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 pt-24 pb-12">
-        <h1 class="text-3xl font-bold mb-8">Admin Dashboard</h1>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-zinc-900 p-6 rounded-lg">
-                <h3 class="text-gray-400 text-sm mb-2">Total Reports</h3>
-                <p class="text-3xl font-bold" id="totalReports">-</p>
+        <!-- Live Information -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Live Information</h5>
+                        <canvas id="liveChart"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="bg-zinc-900 p-6 rounded-lg">
-                <h3 class="text-gray-400 text-sm mb-2">Pending Reports</h3>
-                <p class="text-3xl font-bold text-yellow-500" id="pendingReports">-</p>
-            </div>
-            <div class="bg-zinc-900 p-6 rounded-lg">
-                <h3 class="text-gray-400 text-sm mb-2">Active Investigations</h3>
-                <p class="text-3xl font-bold text-blue-500" id="activeInvestigations">-</p>
-            </div>
-            <div class="bg-zinc-900 p-6 rounded-lg">
-                <h3 class="text-gray-400 text-sm mb-2">Resolved Cases</h3>
-                <p class="text-3xl font-bold text-green-500" id="resolvedCases">-</p>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Performance</h5>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Reports</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Response Time</span>
+                                <span>92%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 92%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Resolution Rate</span>
+                                <span>78%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Charts Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Reports by Status -->
-            <div class="bg-zinc-900 p-6 rounded-lg">
-                <h3 class="text-xl font-bold mb-4">Reports by Status</h3>
-                <canvas id="statusChart"></canvas>
-            </div>
-            <!-- Reports by Type -->
-            <div class="bg-zinc-900 p-6 rounded-lg">
-                <h3 class="text-xl font-bold mb-4">Reports by Type</h3>
-                <canvas id="typeChart"></canvas>
+        <!-- Annual Information -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Annual Overview</h5>
+                <canvas id="annualChart"></canvas>
             </div>
         </div>
-
-        <!-- Recent Activity -->
-        <div class="bg-zinc-900 p-6 rounded-lg">
-            <h3 class="text-xl font-bold mb-4">Recent Activity</h3>
-            <div class="space-y-4" id="recentActivity">
-                <!-- Activity items will be populated here -->
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script>
-        // Check authentication
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/login.html';
-            }
-        }
+        // Initialize all charts when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+            fetchDashboardData();
+            // Update live data every 30 seconds
+            setInterval(updateLiveData, 30000);
+        });
 
-        // Fetch dashboard data
-        async function fetchDashboardData() {
-            try {
-                const token = localStorage.getItem('token');
-                console.log('Token:', token); // Debug line
-                const response = await fetch('http://localhost:3001/api/reports/stats', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                updateDashboard(data);
-            } catch (error) {
-                console.error('Error fetching dashboard data:', error);
-            }
-        }
-
-        // Update dashboard with data
-        function updateDashboard(data) {
-            // Update stats
-            document.getElementById('totalReports').textContent = data.total_reports;
-            document.getElementById('pendingReports').textContent = data.pending_reports;
-            document.getElementById('activeInvestigations').textContent = data.investigating_reports;
-            document.getElementById('resolvedCases').textContent = data.resolved_reports;
-
-            // Update status chart
-            new Chart(document.getElementById('statusChart'), {
+        function initializeCharts() {
+            // Completion Rate Semi-Donut
+            const completionCtx = document.getElementById('completionChart').getContext('2d');
+            new Chart(completionCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pending', 'Investigating', 'Resolved'],
                     datasets: [{
-                        data: [
-                            data.pending_reports,
-                            data.investigating_reports,
-                            data.resolved_reports
-                        ],
-                        backgroundColor: ['#EAB308', '#3B82F6', '#22C55E']
+                        data: [76, 24],
+                        backgroundColor: ['#FF0080', '#3a3a3a'],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: -90
+                    }]
+                },
+                options: {
+                    cutout: '80%',
+                    plugins: { legend: { display: false } },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Monthly Trend Chart
+            const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Reports',
+                        data: [65, 59, 80, 81, 56, 55],
+                        borderColor: '#FF0080',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(255, 0, 128, 0.1)'
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#fff'
-                            }
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#333' },
+                            ticks: { color: '#fff' }
+                        },
+                        x: {
+                            grid: { color: '#333' },
+                            ticks: { color: '#fff' }
                         }
                     }
                 }
             });
 
-            // Update type chart if data available
-            if (data.reports_by_type) {
-                new Chart(document.getElementById('typeChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(data.reports_by_type),
-                        datasets: [{
-                            label: 'Reports',
-                            data: Object.values(data.reports_by_type),
-                            backgroundColor: '#FF0080'
-                        }]
+            // Live Information Chart
+            const liveCtx = document.getElementById('liveChart').getContext('2d');
+            new Chart(liveCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 20}, (_, i) => i),
+                    datasets: [{
+                        label: 'Live Data',
+                        data: generateRandomData(20),
+                        borderColor: '#FF0080',
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
                     },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#fff'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#fff'
-                                }
-                            }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#333' },
+                            ticks: { color: '#fff' }
                         },
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
+                        x: {
+                            grid: { display: false },
+                            ticks: { display: false }
                         }
                     }
+                }
+            });
+
+            // Annual Chart
+            const annualCtx = document.getElementById('annualChart').getContext('2d');
+            new Chart(annualCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Monthly Reports',
+                        data: [65, 59, 80, 81, 56, 55, 40, 45, 70, 75, 65, 60],
+                        backgroundColor: '#FF0080'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#333' },
+                            ticks: { color: '#fff' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#fff' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateRandomData(points) {
+            return Array.from({length: points}, () => Math.random() * 100);
+        }
+
+        function updateLiveData() {
+            // Update live chart with new data
+            const chart = Chart.getChart('liveChart');
+            if (chart) {
+                const newData = generateRandomData(20);
+                chart.data.datasets[0].data = newData;
+                chart.update();
+            }
+        }
+
+        async function fetchDashboardData() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:3001/api/reports/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
-            }
-
-            // Update recent activity
-            if (data.recent_activity) {
-                const activityHtml = data.recent_activity.map(activity => `
-                    <div class="border-l-4 border-[#FF0080] pl-4">
-                        <p class="font-semibold">${activity.type}</p>
-                        <p class="text-sm text-gray-400">${activity.description}</p>
-                        <p class="text-xs text-gray-500">${new Date(activity.timestamp).toLocaleString()}</p>
-                    </div>
-                `).join('');
-                document.getElementById('recentActivity').innerHTML = activityHtml;
+                
+                if (!response.ok) throw new Error('Failed to fetch stats');
+                
+                const data = await response.json();
+                updateDashboardData(data);
+            } catch (error) {
+                console.error('Error:', error);
             }
         }
 
-        function logout() {
-            localStorage.removeItem('token');
-            window.location.href = '/login.html';
+        function updateDashboardData(data) {
+            // Update completion rate
+            const completionChart = Chart.getChart('completionChart');
+            if (completionChart) {
+                completionChart.data.datasets[0].data = [
+                    data.completionRate,
+                    100 - data.completionRate
+                ];
+                completionChart.update();
+                document.querySelector('.percent-display').textContent = 
+                    `${Math.round(data.completionRate)}%`;
+            }
+
+            // Update monthly trends
+            const monthlyChart = Chart.getChart('monthlyTrendChart');
+            if (monthlyChart) {
+                const months = data.monthlyTrends.map(item => 
+            // Update charts with real data
+            // This would replace the mock data in the charts above
+            console.log('Updating dashboard with:', data);
         }
-
-        // Initial load
-        checkAuth();
-        fetchDashboardData();
-
-        // Refresh every 30 seconds
-        setInterval(fetchDashboardData, 30000);
     </script>
 </body>
 </html>

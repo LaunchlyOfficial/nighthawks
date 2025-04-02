@@ -19,18 +19,13 @@ const permissionRequestSchema = z.object({
 // Get all permission requests (admin only)
 router.get('/', validateAuth, requireAdmin, async (req, res) => {
   try {
-    console.log('GET /permissions request received');
-    console.log('User:', req.user);
-
-    const result = await query(
-      `SELECT pr.*, 
-              u.username as reviewer_name
-       FROM permission_requests pr
-       LEFT JOIN users u ON pr.reviewed_by = u.id
-       ORDER BY pr.created_at DESC`
-    );
+    const result = await query(`
+      SELECT pr.*, u.username as reviewed_by_username
+      FROM permission_requests pr
+      LEFT JOIN users u ON pr.reviewed_by = u.id
+      ORDER BY pr.created_at DESC
+    `);
     
-    console.log('Query result:', result.rows);
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching permission requests:', error);

@@ -5,6 +5,7 @@ import { validateAuth } from '../middleware/auth.js';
 import { adminLimiter } from '../middleware/rateLimit.js';
 import type { AuthRequest } from '../types/auth.js';
 import type { Response } from 'express';
+import { query } from '../config/database.js';  // Use this instead of db
 
 const router = Router();
 

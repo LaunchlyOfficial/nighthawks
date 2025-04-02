@@ -1,4 +1,4 @@
-import { pgTable, text, serial, json, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -17,6 +17,7 @@ export const crimeReports = pgTable("crime_reports", {
   description: text("description").notNull(),
   evidence: text("evidence"),
   createdAt: timestamp("created_at").defaultNow(),
+  status: text("status").notNull().default("pending"),
 });
 
 export const permissionRequests = pgTable("permission_requests", {
@@ -25,42 +26,33 @@ export const permissionRequests = pgTable("permission_requests", {
   websiteUrl: text("website_url").notNull(),
   contactInfo: text("contact_info").notNull(),
   testingScope: text("testing_scope").notNull(),
+  status: text("status").notNull().default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const applications = pgTable("applications", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  skills: text("skills").array().notNull(),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  position: text("position").notNull(),
   experience: text("experience").notNull(),
-  reason: text("reason").notNull(),
-  resume: text("resume"),
+  skills: text("skills").array(),
+  motivation: text("motivation").notNull(),
+  status: text("status").notNull().default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertUserSchema = createInsertSchema(users);
-export const insertCrimeReportSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  incidentType: z.string().min(1, "Incident type is required"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  evidence: z.string().optional(),
-});
-export const insertPermissionRequestSchema = z.object({
-  companyName: z.string().min(1, "Company name is required"),
-  websiteUrl: z.string().url("Invalid website URL"),
-  contactInfo: z.string().min(1, "Contact information is required"),
-  testingScope: z.string().min(10, "Testing scope must be at least 10 characters"),
-});
+export const insertCrimeReportSchema = createInsertSchema(crimeReports);
+export const insertPermissionRequestSchema = createInsertSchema(permissionRequests);
 export const insertApplicationSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  email: z.string().email("Valid email is required"),
-  position: z.string().default("Security Analyst"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email"),
+  position: z.string().min(2, "Position must be at least 2 characters"),
   experience: z.string().min(10, "Please provide more details about your experience"),
-  skills: z.array(z.string()).min(1, "At least one skill is required"),
-  reason: z.string().min(10, "Please tell us why you want to join"),
-  resume: z.string().url().optional(),
-  status: z.string().default("New")
+  skills: z.array(z.string()).or(z.string()),
+  motivation: z.string().min(10, "Please tell us why you want to join"),
+  status: z.string().default("pending")
 });
 
 export type User = typeof users.$inferSelect;

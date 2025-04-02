@@ -42,13 +42,11 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1">
-          <Router />
-        </main>
-        <Footer />
-      </div>
+      <Header />
+      <main className="min-h-screen pt-16">
+        <Router />
+      </main>
+      <Footer />
       <Toaster />
       <CP />
     </QueryClientProvider>

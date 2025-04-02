@@ -74,7 +74,9 @@ export default function Home() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-lg border-2 hover:bg-[#FF0080] hover:border-[#FF0080] hover:text-white transition-all duration-500"
+                className="text-lg bg-transparent text-black border-2 border-black 
+                          hover:bg-black/10 hover:text-black hover:border-black 
+                          transition-all duration-500"
               >
                 JOIN THE MISSION
               </Button>
@@ -134,7 +136,7 @@ export default function Home() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="text-lg border-2 hover:bg-[#FF0080] hover:border-[#FF0080] hover:text-white transition-all duration-500"
+              className="text-lg border-2 bg-[hsl(0deg_0%_0%_/_0%)] hover:bg-[#FF0080] hover:border-[#FF0080] hover:text-white transition-all duration-500"
             >
               APPLY NOW
             </Button>

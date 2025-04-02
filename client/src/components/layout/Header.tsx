@@ -6,14 +6,10 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-zinc-800">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2">
-            <Shield className="h-6 w-6 text-white" />
-            <Link href="/">
-              <span className="text-xl font-bold text-white cursor-pointer">
-                NIGHTHAWK
-              </span>
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center space-x-2">
+            <Shield className="w-8 h-8 text-white" />
+            <span className="text-xl font-bold text-white">NightHawk</span>
+          </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="/report">

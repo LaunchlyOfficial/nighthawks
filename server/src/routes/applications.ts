@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { query } from '../config/database.js';
 import { validateAuth, requireAdmin } from '../middleware/auth.js';
 import { z } from 'zod';
+import express from 'express';
+import { insertApplicationSchema } from '../schema.js';
 
 const router = Router();
 
@@ -19,23 +21,20 @@ router.get('/admin', validateAuth, requireAdmin, async (req, res) => {
 // Submit new application
 router.post('/', async (req, res) => {
   try {
-    const { name, email, position, experience, skills, reason, resume, status } = req.body;
+    const data = insertApplicationSchema.parse(req.body);
     
     const result = await query(
       `INSERT INTO applications 
-       (name, email, position, experience, skills, reason, resume, status) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+       (name, email, position, experience, skills, motivation) 
+       VALUES ($1, $2, $3, $4, $5, $6) 
        RETURNING *`,
-      [name, email, position, experience, skills, reason, resume || null, status]
+      [data.name, data.email, data.position, data.experience, data.skills, data.motivation]
     );
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error('Error submitting application:', error);
-    res.status(500).json({ 
-      error: 'Failed to submit application',
-      details: error.message 
-    });
+    console.error('Error creating application:', error);
+    res.status(500).json({ error: 'Failed to create application' });
   }
 });
 
